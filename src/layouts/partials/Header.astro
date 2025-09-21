@@ -1,6 +1,5 @@
 ---
 import Logo from "@/components/core/Logo.astro";
-import ThemeToggle from "@/components/core/ThemeToggle.astro";
 import menu from "@/config/menu.json";
 
 export interface ChildNavigationLink {
@@ -112,11 +111,8 @@ const { pathname } = Astro.url;
         ))
       }
     </ul>
-    <div class="order-1 ml-auto absolute right-3 top-3 items-center md:order-2 md:ml-0 lg:relative lg:right-0 lg:flex lg:top-0">
-      <ThemeToggle />
-    </div>
-  </header>
-</nav>
+  </nav>
+</header>
 
 <script is:inline>
   function initDropdownListeners() {
