@@ -7,23 +7,23 @@ body {
 }
 
 h1 {
-  @apply font-primary font-bold text-4xl lg:text-5xl
+  @apply font-secondary font-bold text-4xl lg:text-5xl
 }
 
 h2 {
-  @apply font-primary font-bold text-3xl lg:text-4xl
+  @apply font-secondary font-bold text-3xl lg:text-4xl
 }
 
 h3 {
-  @apply font-primary font-bold text-2xl lg:text-3xl
+  @apply font-secondary font-bold text-2xl lg:text-3xl
 }
 
 h4 {
-  @apply font-primary font-bold text-xl lg:text-2xl
+  @apply font-secondary font-bold text-xl lg:text-2xl
 }
 
 h5 {
-  @apply font-primary font-bold text-lg lg:text-xl
+  @apply font-secondary font-bold text-lg lg:text-xl
 }
 
 p {

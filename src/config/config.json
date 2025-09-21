@@ -1,30 +1,30 @@
 {
   "site": {
-    "title": "alfadev-astro-starter",
-    "base_url": "https://astro-starter.alfadev.io",
+    "title": "Holy Trinity Episcopal Church",
+    "base_url": "https://holytrinityepiscopal.org",
     "base_path": "/",
     "trailing_slash": false,
-    "favicon": "/images/favicon.ico",
-    "logo": "/images/logo.png",
+    "favicon": "/images/Episcopal-Shield.svg",
+    "logo": "/images/Episcopal-Shield.svg",
     "logo_width": "47",
     "logo_height": "47",
-    "logo_text": "alfadev-astro-starter"
+    "logo_text": "Holy Trinity Episcopal Church"
   },
 
   "params": {
-    "footer_description": "Building cool things, one line of code (and a lot of coffee) at a time. Got questions? Or just bored? Reach out!",
-    "email": "diego.alfadev@gmail.com",
-    "location": "Somewhere on Earth, where the Wi-Fi is decent and the coffee is strong.",
-    "phone": "+704-555-0127 (but let's be honest, email is faster)",
+    "footer_description": "Following the example of our Lord Jesus Christ, Holy Trinity loves, leads, serves and follows where God calls.",
+    "email": "office@holytrinityepiscopal.org",
+    "location": "5101 Tanner Dr, Gillette, WY 82718",
+    "phone": "(307) 682-4296",
     "contact_form_action": "#",
-    "copyright": "Copyright © 2023 proudly crafted by [AlfaDev](https://github.com/diego-alfadev)"
+    "copyright": "Copyright © 2025 • Holy Trinity Episcopal Church"
 },
 
   "metadata": {
-    "meta_author": "alfadev",
-    "meta_image": "/images/logo.png",
-    "meta_description": "alfadev-astro-starter is a starter template for Astro, the modern static site generator for the modern web.",
-    "meta_keywords": ["astro", "Astro Starter", "alfadev", "Diego Alfaro Sáez", "static site generator", "modern web", "astro template"],
-    "meta_application_name": "alfadev-astro-starter"
+    "meta_author": "Holy Trinity Episcopal Church",
+    "meta_image": "/images/Holy-Trinity-Front-scaled.jpeg",
+    "meta_description": "Welcome to Holy Trinity Episcopal Church in Gillette, WY. Everyone is welcome at God's table. Join us for worship, fellowship, and spiritual growth in our inclusive faith community.",
+    "meta_keywords": ["Holy Trinity Episcopal Church", "Gillette Wyoming", "Episcopal Church", "Christian worship", "inclusive faith community", "Sunday service", "Episcopal traditions", "spiritual growth"],
+    "meta_application_name": "Holy Trinity Episcopal Church"
   }
 }

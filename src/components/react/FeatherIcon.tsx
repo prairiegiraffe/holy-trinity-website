@@ -19,6 +19,12 @@ export default function FeatherIcon(props: IconProps) {
 
     // console.log('Icon', props.name, iconName, IconI)
 
+    // If icon doesn't exist, return a fallback or null
+    if (!IconI) {
+        console.warn(`Icon "${iconName}" not found in react-feather icons. Available icon names should match react-feather exports.`)
+        return <Icon.AlertCircle {...props} />
+    }
+
     return (
         <IconI {...props} />
     )

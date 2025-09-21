@@ -258,9 +258,7 @@ const _noindex =
           ) {
             return localStorage.getItem("theme");
           }
-          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            return "dark";
-          }
+          // Always default to light mode regardless of system preference
           return "light";
         })();
 
@@ -279,7 +277,6 @@ const _noindex =
     </script>
   </head>
   <body class="transition-colors duration-500">
-    <TwSizeIndicator />
     <Header />
     <main id="main-content">
       <slot />

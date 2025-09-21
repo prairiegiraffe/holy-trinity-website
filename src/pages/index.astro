@@ -14,8 +14,8 @@ const call_to_action = homepage.data.call_to_action;
 
 <Base>
   <!-- banner -->
-  <section class="lg:mb-10 animate-fade-in">
-    <Section section={banner} />
+  <section class="animate-fade-in">
+    <Section section={banner} isHero={true} />
   </section>
   <!-- multi section -->
   {
@@ -29,8 +29,6 @@ const call_to_action = homepage.data.call_to_action;
   }
   <!-- key features -->
   <Features features={features} />
-  <!-- testimonial -->
-  <Testimonial testimonial={testimonial} />
   <!-- call to action -->
   <Cta {...call_to_action} />
   <!-- <Content /> -->

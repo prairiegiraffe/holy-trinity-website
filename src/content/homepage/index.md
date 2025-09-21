@@ -2,128 +2,104 @@
 # Does not contain meta customizations because it is the homepage and config is already set in the config file
 
 banner:
-  title: 'An <span class="text-accent text-shadow-[0px_5px_15px] shadow-accent/10">Astro</span> Starter <span class="text-secondary"> batteries-included</span>'
+  title: 'Holy Trinity Episcopal Church'
   title_size: "text-4xl md:text-6xl"
-  content: "A fully responsive astro starter repo, ideal for simple (yet laborious) content-driven pages or landings."  
-  image: /images/logo_v5_xl_pfp.webp
-  buttons:
-    - label: Get the Code
-      href: "https://github.com/diego-alfadev/alfadev-astro-starter"
-      target: "_blank"
-      icon: _GitHub
-      addClasses: "w-full bg-gray-900 text-white hover:bg-accent dark:border-white/10 dark:border"
+  content: "Everyone is Welcome at God's Table. At Holy Trinity Episcopal Church, we welcome you with open arms to join a community where faith guides us, love sustains us, and fellowship enriches us."
+  image: /images/Holy-Trinity-Front-scaled.jpeg
 
 sections:
-  - title: Tired of writing the same code over and over again?
-    content: "We've all been there... Setting up the same SEO, theming, and responsive layout boilerplate again and again. Say goodbye to that! <b class='text-accent'>alfadev-astro-starter</b> lets you jump straight into creating, skipping the repetitive groundwork."
-    image: /images/tired-of-writing.webp
+  - title: A Haven of Faith and Community
+    content: "Welcome to the Holy Trinity Episcopal Church, a sanctuary of warmth and inclusivity nestled in the heart of Gillette, WY. Embracing the teachings of Jesus Christ, we open our doors to all, celebrating the divine tapestry of our community. Our philosophy is simple: <b class='text-accent'>love unconditionally, lead by example, serve with generosity, and follow wherever God calls us</b>."
+    image: /images/Holy-Trinity-Front-scaled.jpeg
 
-  - title: This is not a library
-    content: It's a <b class='text-accent'>ready-to-go template</b>. No steep learning curves or dozens of new dependencies. Just the essentials to build content-driven pages with ease.<br/>If you're familiar with <span class="text-accent font-bold">Astro</span>, you are good to go.
-    image: /images/this-is-not-a-library.webp
+  - title: Worship With Us
+    content: "We invite you to worship and fellowship during our weekly services. Every Sunday, we gather for a <b class='text-accent'>Morning Service at 10 AM</b> that fills the sanctuary with song, prayer, and reflection. Concurrently, we host a Children's Sunday School, providing our youngest members with engaging biblical teachings. Our <b class='text-accent'>Evening Service at 7 PM</b> offers a peaceful end to your Sabbath with thoughtful sermons and a candlelit atmosphere."
+    image: /images/Evening-Service-Resized.jpg
 
-  - title: Optimized out of the box
-    content: Lightweight and fast. Packed with <span class="text-accent font-bold">Astro</span>, <span class="text-[#38bdf8] font-bold">tailwind</span> and <span class="text-[#e41c81] font-bold">Sass</span> goodness, so your pages load <b class='text-accent'>blazing fast</b>—right from the start. <br/> All the pages are configured in a way that are SEO-friendly and defined with markdown.
-    image: /images/optimized-out-of-the-box.webp
+  - title: Discover the Beauty of Episcopal Traditions
+    content: "Stepping into Holy Trinity Episcopal Church, you're about to experience a spiritual journey grounded in centuries-old traditions. Our services embrace an age-old liturgical pattern that makes room for both vibrant hymns and solemn prayers, fostering a sense of belonging and peace. At Holy Trinity, we cherish the <b class='text-accent'>Holy Eucharist</b>, a profound expression of faith and unity open to all baptized Christians."
+    image: /images/Alter-White-Resized.jpg
 
-  - title: Looks great, day or night
-    content: "With <b class='text-accent'>built-in dark theme support</b>, your site will look amazing no matter what time of day your users visit. Or what their eyes prefer.<br/> <br/>Forget convoluted theming systems. alfadev-astro-starter keeps it <b class='text-accent'>simple and extensible</b>, so you can focus on your design and let the code work fori you."
-    image: /images/loogs-good.webp
+  - title: A Church for All - Embracing Love and Diversity in Faith
+    content: "At Holy Trinity Episcopal Church, we uphold a fundamental belief that our community is made stronger through diversity and inclusivity. We are a spiritual haven that offers open arms to every soul seeking refuge, guidance, or a place to be themselves. As followers of Christ's message of unconditional love, we affirm that <b class='text-accent'>every individual, regardless of race, gender, sexual orientation, or background, is a cherished part of God's family</b>."
+    image: /images/Bishop-Visit.png
 
 
-##key features
+##worship schedule
 features:
-  title: Why <span class="text-accent">alfadev-starter</span>?
-  description: Because every content-driven page needs a lot boilerplate to initialize, and **we provide you with the tools and guidelines** needed to focus on what's important.
+  title: <span class="text-accent">Worship</span> Schedule & Services
+  description: Join us for weekly worship and fellowship. **All are welcome** at God's table.
   feature_list:
-    - icon: "box"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Simple
-      content: Avoid Complexity, small yet not useless. Loaded, but <b class="text-text">not overwhelming</b>.
-    - icon: "clock"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Up-to-date
-      content: Using the latest version and best practices of <span class="text-accent font-bold">Astro</span>, <span class="text-[#38bdf8] font-bold">tailwindcss</span> and <span class="text-[#e41c81] font-bold">Sass</span>
-    - icon: "search"  #icon package react-feather-icon [https://feathericons.com/]
-      title: SEO Friendly
-      content: Boost your site's visibility with <b class="text-text">built-in SEO optimizations</b>, including automatic sitemap generation using <a target='blank' href="https://docs.astro.build/es/guides/integrations-guide/sitemap/"><span class="text-accent font-bold underline">astrojs/sitemap</span></a>.
-    - icon: "plus"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Extendable
-      content: Add or change content just by <b class="text-text">editing markdown files</b>, so it stays in one place regardless of the code.
-    - icon: "coffee"  #icon package react-feather-icon [https://feathericons.com/]
-      title: "Focused"
-      content: Put you effort on what's important, not on small details. Dont worry about <span class="text-shadow-sm shadow-surface-contrast">***that damn shadow***</span>.
-    - icon: "tool"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Customizable
-      content: Every corner of the page <b class="text-text">can be easily changed</b> to fit your needs.
-    - icon: "moon"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Dark Mode Support
-      content: Fully supports ***dark theme*** with an easy-to-extend theming system.
-    - icon: "feather"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Lightweight
-      content: Fast and efficient. Every asset is optimized to ensure <b class="text-text">minimal load times</b>.
-    - icon: "layers"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Modular
-      content: Built with ***reusable components*** that simplify adding or editing sections of the page.
-    - icon: "zap"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Performance-First
-      content: Designed with <b class="text-text">best-in-class performance</b> metrics to improve the user experience.
-    - icon: "layout"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Content-Centric
-      content: Focused on delivering content seamlessly, making it ideal for <b class="text-text">portfolios, showcases, or landing pages</b>.
-    - icon: "code"  #icon package react-feather-icon [https://feathericons.com/]
-      title: Developer-Friendly
-      content: Crafted for developers who value ***simplicity, flexibility, and modern*** tools.
+    - icon: "Sun"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Morning Service
+      content: <b class="text-text">Sundays at 10:00 AM</b> - Join us for our main worship service filled with song, prayer, and reflection.
+    - icon: "Users"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Children's Sunday School
+      content: <b class="text-text">Sundays at 10:00 AM</b> - Engaging biblical teachings and nurturing community for our youngest members.
+    - icon: "Moon"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Evening Service
+      content: <b class="text-text">Sundays at 7:00 PM</b> - A peaceful end to your Sabbath with thoughtful sermons and candlelit atmosphere.
+    - icon: "Monitor"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Online Worship
+      content: <b class="text-text">Sunday Morning Services streamed on Zoom</b> - Meeting #3079214717, Passcode #368496
+    - icon: "Heart"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Holy Eucharist
+      content: Experience the profound expression of faith and unity, <b class="text-text">open to all baptized Christians</b>.
+    - icon: "Book"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Episcopal Traditions
+      content: Experience centuries-old liturgical patterns with <b class="text-text">vibrant hymns and solemn prayers</b>.
+    - icon: "Clock"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Office Hours
+      content: <b class="text-text">Noon to 2 PM</b> - Mondays, Wednesdays, and Fridays for pastoral care and questions.
+    - icon: "Calendar"  #icon package react-feather-icon [https://feathericons.com/]
+      title: Special Events
+      content: Join us for <b class="text-text">community gatherings and special services</b> throughout the year.
+    - icon: "Compass"  #icon package react-feather-icon [https://feathericons.com/]
+      title: All Are Welcome
+      content: We embrace people from <b class="text-text">all walks of life</b> to grow with us in faith and acceptance.
     
 
 
 
 
-#testimonial
+#community voices
 testimonial:
-  title: Our adopters and their clients <ins>have nice things to say</ins> about us
-  description: Or they will, once they taste a drop of **what we've built**
+  title: Our community members <ins>share their experiences</ins> with us
+  description: Hear from those who have found **faith, fellowship, and spiritual growth** at Holy Trinity
   testimonial_list:
-    - author: Jhon Doe
-      organization: Example Corp
+    - author: Sarah M.
+      organization: Longtime Member
       rating: five
-      content: "I can't believe this testimonial is autogenerated! But hey, I’d still give it <b class='text-accent'>five stars</b>!"
-    - author: Jane D. Smith
-      organization: Acme Inc.
+      content: "Holy Trinity has been my spiritual home for over 10 years. The <b class='text-accent'>welcoming community</b> and meaningful worship have sustained me through life's joys and challenges."
+    - author: Michael T.
+      organization: New Member
+      rating: five
+      content: "As someone new to the Episcopal tradition, I was welcomed with <b class='text-accent'>open arms</b>. The liturgy is beautiful and the community is genuine."
+    - author: Jennifer L.
+      organization: Sunday School Parent
+      rating: five
+      content: "My children love coming to Holy Trinity. The <b class='text-accent'>Children's Sunday School</b> provides wonderful biblical education in a nurturing environment."
+    - author: Robert H.
+      organization: Visiting Guest
       rating: four
-      content: "Doesn't matter if I exist or not, this project is <b class='text-accent'>truly fantastic</b>. Highly recommend!"
-    - author: Bob A. Nonymous
-      organization: FutureTech Labs
+      content: "I attended service while visiting Gillette and felt immediately welcomed. The <b class='text-accent'>warmth and inclusivity</b> of this congregation is remarkable."
+    - author: Maria S.
+      organization: Community Member
       rating: five
-      content: "Wow, this is so good, I’d recommend it to all my imaginary friends."
-    - author: Alice Placeholder
-      organization: Startup Ipsum
-      rating: three
-      content: "If I were real, I’d definitely complain less. But it’s still pretty good!"
-    - author: Richard Fakenham
-      organization: Lorem Ipsum Ltd.
-      rating: five
-      content: "Astounding! Even for a made-up person like me, this template <b class='text-accent'>exceeds expectations</b>."
-    - author: Emily Mockson
-      organization: Phantom Co.
+      content: "Holy Trinity truly lives up to its mission of love and acceptance. <b class='text-accent'>Everyone is welcome</b> at God's table here."
+    - author: David K.
+      organization: Online Worshipper
       rating: four
-      content: "No real user said this, but they should! Such a slick and modern experience."
-    - author: Alex Testworth
-      organization: AlphaBeta Agency
-      rating: five
-      content: "Best autogenerated testimonial I’ve ever seen. 10/10 would fake it again."
-    - author: Chris Placeholder
-      # avatar: "/images/users/user-8.png"
-      organization: Ghost Design Studios
-      rating: four
-      content: "You don’t have to believe me, but you should believe in this product!"
+      content: "Even joining virtually through Zoom, I feel connected to the community. The <b class='text-accent'>online worship experience</b> is meaningful and accessible."
 
 
 ## Call to Action
 call_to_action:
-  title: "Because we love <span class='text-accent text-shadow-[0px_5px_15px]' >Astro</span> and <span class='text-[#38bdf8] text-shadow-[0px_5px_15px]'>Tailwind</span>."
-  description: "Save yourself some time (and sanity). Use this template and act like you planned everything from scratch. We won't tell. **Just be sure to leave a star, please.**"
-  button: 
-    label: "Grab the Starter"
-    href: "https://github.com/diego-alfadev/alfadev-astro-starter"
+  title: "Take the First Step: Visit <span class='text-accent text-shadow-[0px_5px_15px]'>Holy Trinity</span> Episcopal Church"
+  description: "Whether it's your first visit or you're a familiar face returning, we invite you to visit and engage with our community. Your spiritual journey matters, and we're here to support it. **Let's live our faith together.**"
+  button:
+    label: "Contact Us"
+    href: "/contact"
     color: accent
 
 ---

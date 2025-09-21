@@ -1,0 +1,75 @@
+---
+import Section from "@/components/core/Section.astro";
+import Base from "@/layouts/Base.astro";
+import { getEntry } from "astro:content";
+
+const endowment = await getEntry("endowment", "index");
+const page_data = {
+  ...endowment.data,
+  content: endowment.body,
+};
+const { Content } = await endowment.render();
+const { banner, members } = endowment.data;
+---
+
+<Base
+  entry_keys={["endowment", "index"]}
+>
+  <!-- Hero Section -->
+  {banner && (
+    <section class="animate-fade-in">
+      <Section section={banner} isHero={true} />
+    </section>
+  )}
+
+  <!-- Content Section -->
+  <section class="py-16">
+    <div class="container">
+      <div class="mx-auto max-w-6xl">
+        <!-- Description -->
+        <div class="mb-16 text-center">
+          <div class="prose prose-lg mx-auto">
+            <Content />
+          </div>
+        </div>
+
+        <!-- Committee Members Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {members && members.map((member) => (
+            <div class="bg-surface rounded-lg shadow-lg overflow-hidden border border-border hover:shadow-xl transition-shadow duration-300">
+              <!-- Member Image -->
+              <div class="aspect-square overflow-hidden bg-gray-200 flex items-center justify-center">
+                {member.image ? (
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    class="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+                    <span class="text-gray-500 text-2xl font-bold">
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <!-- Member Info -->
+              <div class="p-6 text-center">
+                <h3 class="text-xl font-secondary font-bold text-primary mb-2">
+                  {member.name}
+                </h3>
+                <p class="text-lg font-secondary font-semibold text-secondary mb-2">
+                  {member.title}
+                </p>
+                <p class="text-sm text-text-secondary">
+                  {member.term}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

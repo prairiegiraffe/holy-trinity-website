@@ -44,10 +44,14 @@ const indexPage = defineCollection({
 export const collections = {
   about: pagesCollection,
   changelog: pagesCollection,
+  clergy: pagesCollection,
   contact: pagesCollection,
+  endowment: pagesCollection,
   features: pagesCollection,
   homepage: indexPage,
+  "music-team": pagesCollection,
   pages: pagesCollection,
+  vestry: pagesCollection,
 };
 
 
