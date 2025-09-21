@@ -2,22 +2,19 @@
 import Logo from "@/components/core/Logo.astro";
 import config from "@/config/config.json";
 import Base from "@/layouts/Base.astro";
-import { markdownify } from "@/lib/utils/textConverter";
-import { getEntry } from "astro:content";
 
 const { logo } = config.site;
-const entry = await getEntry("pages", "404");
-const { Content } = await entry.render();
 ---
 
-<Base entry_keys={["pages", "404"]}>
+<Base title="Page Not Found - Holy Trinity Episcopal Church">
   <section class="section">
     <div class="container">
       <div class="flex h-[40vh] items-center justify-center">
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center text-center">
           <Logo showText={false} />
-          <h1 class="mb-4" set:html={markdownify(entry.data.title)} />
-          <Content />
+          <h1 class="mb-4 text-4xl font-bold">Page Not Found</h1>
+          <p class="mb-6 text-lg">Sorry, the page you're looking for doesn't exist.</p>
+          <a href="/" class="btn btn-primary">Return Home</a>
         </div>
       </div>
     </div>
