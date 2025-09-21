@@ -1,0 +1,5 @@
+build:
+  command: npm run build
+  output: dist
+environment:
+  NODE_VERSION: "18"

@@ -1,0 +1,11 @@
+# Cloudflare Pages build configuration
+# This file helps Cloudflare Pages understand how to build the project
+
+# Build settings
+build:
+  command: "npm run build"
+  output: "dist"
+
+# Environment settings
+environment:
+  NODE_VERSION: "18"
