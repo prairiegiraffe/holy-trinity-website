@@ -63,7 +63,7 @@ const image_position_classes = (() => {
         >
           {
             image && image_position === "top" && (
-              <div class={`${image_position_classes[2]}`}>
+              <div class={`${image_position_classes[2]} mb-6 md:mb-8`}>
                 <Image
                   class="w-1/2 mr-auto ml-auto object-cover rounded-lg max-h-80"
                   alt="section-image"
@@ -74,7 +74,7 @@ const image_position_classes = (() => {
               </div>
             )
           }
-          <div class=`${image_position_classes[1]}`>
+          <div class=`${image_position_classes[1]} ${image && image_position != "top" ? "mb-6 md:mb-0" : ""}`>
             <h1 class={`${section.title_size}`} set:html={markdownify(title)} />
 
             <p class="mt-6" set:html={markdownify(content)} />
@@ -91,7 +91,7 @@ const image_position_classes = (() => {
           </div>
             {
               image && image_position != "top" && (
-                <div class={`${image_position_classes[2]} flex items-center justify-center`}>
+                <div class={`${image_position_classes[2]} flex items-center justify-center mt-6 md:mt-0`}>
                   <Image
                     class="w-full object-cover rounded-lg max-h-80 lg:max-h-96"
                     alt="section-image"

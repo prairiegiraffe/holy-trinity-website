@@ -95,7 +95,7 @@ testimonial:
 
 ## Call to Action
 call_to_action:
-  title: "Take the First Step: Visit <span class='text-accent text-shadow-[0px_5px_15px]'>Holy Trinity</span> Episcopal Church"
+  title: "Take the First Step: Visit <span class='text-accent'>Holy Trinity</span> Episcopal Church"
   description: "Whether it's your first visit or you're a familiar face returning, we invite you to visit and engage with our community. Your spiritual journey matters, and we're here to support it. **Let's live our faith together.**"
 
 ---
