@@ -80,7 +80,7 @@ async function main() {
     console.log(`\n📧 Email: ${email}`);
     console.log(`👤 Name: ${name}`);
     console.log(`🔑 Role: admin`);
-    console.log(`\n🌐 Login at: ${isRemote ? 'https://holytrinityepiscopal.org' : 'http://localhost:4321'}/admin/login`);
+    console.log(`\n🌐 Login at: ${isRemote ? 'https://holytrinitygillette.org' : 'http://localhost:4321'}/admin/login`);
 
   } catch (error) {
     if (error.message.includes('UNIQUE constraint failed')) {

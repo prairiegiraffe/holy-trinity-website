@@ -9,7 +9,7 @@
 -- Replace 'your-email@example.com' and 'Your Name' with actual values
 INSERT INTO users (email, name, role, invite_token, invite_expires_at, is_active)
 VALUES (
-  'admin@holytrinityepiscopal.org',
+  'admin@holytrinitygillette.org',
   'Admin User',
   'admin',
   'initial-setup-token-replace-me',

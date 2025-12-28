@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "Holy Trinity Episcopal Church",
-    "base_url": "https://holytrinityepiscopal.org",
+    "base_url": "https://holytrinitygillette.org",
     "base_path": "/",
     "trailing_slash": false,
     "favicon": "/images/Episcopal-Shield.svg",

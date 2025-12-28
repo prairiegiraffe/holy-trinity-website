@@ -16,7 +16,7 @@ bucket_name = "holy-trinity-images"
 
 # Environment variables (non-sensitive)
 [vars]
-SITE_URL = "https://holytrinityepiscopal.org"
+SITE_URL = "https://holytrinitygillette.org"
 
 # Secrets (set via Cloudflare Dashboard):
 # - JWT_SECRET: Random string for signing JWTs
@@ -24,7 +24,7 @@ SITE_URL = "https://holytrinityepiscopal.org"
 # Preview environment (for PR previews)
 [env.preview]
 [env.preview.vars]
-SITE_URL = "https://preview.holytrinityepiscopal.org"
+SITE_URL = "https://preview.holytrinitygillette.org"
 
 [[env.preview.d1_databases]]
 binding = "DB"
@@ -38,7 +38,7 @@ bucket_name = "holy-trinity-images"
 # Production environment
 [env.production]
 [env.production.vars]
-SITE_URL = "https://holytrinityepiscopal.org"
+SITE_URL = "https://holytrinitygillette.org"
 
 [[env.production.d1_databases]]
 binding = "DB"
