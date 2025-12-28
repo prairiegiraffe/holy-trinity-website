@@ -1,0 +1,102 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+
+const db = Astro.locals.runtime.env.DB;
+
+const { results: posts } = await db
+  .prepare(`
+    SELECT bp.*, u.name as author_name
+    FROM blog_posts bp
+    LEFT JOIN users u ON bp.author_id = u.id
+    ORDER BY bp.created_at DESC
+  `)
+  .all();
+---
+
+<AdminLayout title="Blog Posts" activeNav="blog posts">
+  <div class="page-header">
+    <h1 class="page-title">Blog Posts</h1>
+    <a href="/admin/blog/new" class="btn btn-primary">New Post</a>
+  </div>
+
+  <div class="card">
+    {posts && posts.length > 0 ? (
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {posts.map((post: any) => (
+              <tr>
+                <td>
+                  <a href={`/admin/blog/${post.id}`} class="table-link">
+                    {post.title}
+                  </a>
+                  <div class="table-meta">/{post.slug}</div>
+                </td>
+                <td>{post.author_name || 'Unknown'}</td>
+                <td>
+                  <span class={`badge ${post.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
+                    {post.status}
+                  </span>
+                </td>
+                <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                <td>
+                  <div class="action-buttons">
+                    <a href={`/admin/blog/${post.id}`} class="btn btn-sm btn-secondary">
+                      Edit
+                    </a>
+                    {post.status === 'published' && (
+                      <a href={`/blog/${post.slug}`} class="btn btn-sm btn-secondary" target="_blank">
+                        View
+                      </a>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <p class="empty-state-title">No blog posts yet</p>
+        <p>Create your first blog post to share news and updates with your congregation.</p>
+        <a href="/admin/blog/new" class="btn btn-primary" style="margin-top: 1rem;">
+          Create First Post
+        </a>
+      </div>
+    )}
+  </div>
+</AdminLayout>
+
+<style>
+  .table-link {
+    color: #2c5282;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .table-link:hover {
+    text-decoration: underline;
+  }
+
+  .table-meta {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-top: 0.25rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+</style>

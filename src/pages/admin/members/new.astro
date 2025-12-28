@@ -1,0 +1,46 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+import MemberForm from "@/components/admin/forms/MemberForm";
+---
+
+<AdminLayout title="Add Member">
+  <div class="page-header">
+    <a href="/admin/members" class="back-link">← Back to Members</a>
+    <h1>Add New Member</h1>
+  </div>
+
+  <div class="form-container">
+    <MemberForm client:load />
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .form-container {
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+</style>

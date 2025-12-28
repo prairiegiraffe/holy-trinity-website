@@ -1,0 +1,373 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/core/PageHeader.astro";
+
+const db = Astro.locals.runtime.env.DB;
+const today = new Date().toISOString().split('T')[0];
+
+// Get upcoming events
+const { results: upcomingEvents } = await db
+  .prepare(`
+    SELECT * FROM events
+    WHERE status = 'published' AND event_date >= ?
+    ORDER BY event_date ASC
+  `)
+  .bind(today)
+  .all();
+
+// Get past events (last 10)
+const { results: pastEvents } = await db
+  .prepare(`
+    SELECT * FROM events
+    WHERE status = 'published' AND event_date < ?
+    ORDER BY event_date DESC
+    LIMIT 10
+  `)
+  .bind(today)
+  .all();
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function formatShortDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return {
+    day: date.getDate(),
+    month: date.toLocaleDateString('en-US', { month: 'short' }),
+    year: date.getFullYear()
+  };
+}
+
+function formatTime(timeStr: string) {
+  const [hours, minutes] = timeStr.split(':');
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+}
+---
+
+<Base
+  title="Events | Holy Trinity Episcopal Church"
+  description="Upcoming events and activities at Holy Trinity Episcopal Church in Gillette, Wyoming."
+>
+  <PageHeader title="Events" />
+
+  <section class="section events-section">
+    <div class="container">
+      <h2 class="section-title">Upcoming Events</h2>
+
+      {upcomingEvents && upcomingEvents.length > 0 ? (
+        <div class="events-list">
+          {upcomingEvents.map((event: any) => {
+            const dateInfo = formatShortDate(event.event_date);
+            return (
+              <article class="event-card">
+                <div class="event-date-badge">
+                  <span class="date-month">{dateInfo.month}</span>
+                  <span class="date-day">{dateInfo.day}</span>
+                </div>
+
+                <div class="event-content">
+                  <h3 class="event-title">
+                    <a href={`/events/${event.slug}`}>{event.title}</a>
+                  </h3>
+
+                  <div class="event-meta">
+                    <span class="event-time">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      {formatDate(event.event_date)}
+                      {event.event_time && ` at ${formatTime(event.event_time)}`}
+                    </span>
+
+                    {event.location && (
+                      <span class="event-location">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                          <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        {event.location}
+                      </span>
+                    )}
+                  </div>
+
+                  {event.recurring !== 'none' && (
+                    <span class="recurring-badge">{event.recurring}</span>
+                  )}
+                </div>
+
+                <div class="event-actions">
+                  <a href={`/events/${event.slug}`} class="btn btn-primary btn-sm">
+                    Details
+                  </a>
+                  {event.rsvp_link && (
+                    <a href={event.rsvp_link} class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+                      RSVP
+                    </a>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>No upcoming events at this time. Check back soon!</p>
+        </div>
+      )}
+
+      {pastEvents && pastEvents.length > 0 && (
+        <div class="past-events">
+          <h2 class="section-title">Past Events</h2>
+          <div class="past-events-list">
+            {pastEvents.map((event: any) => (
+              <a href={`/events/${event.slug}`} class="past-event-item">
+                <span class="past-event-date">{formatDate(event.event_date)}</span>
+                <span class="past-event-title">{event.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .events-section {
+    padding: 4rem 0;
+  }
+
+  .section-title {
+    font-family: var(--font-secondary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+  }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .event-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s;
+  }
+
+  .event-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 640px) {
+    .event-card {
+      flex-direction: column;
+    }
+  }
+
+  .event-date-badge {
+    flex-shrink: 0;
+    width: 70px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    padding: 0.75rem;
+  }
+
+  .date-month {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .date-day {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 0.25rem;
+  }
+
+  .event-content {
+    flex: 1;
+  }
+
+  .event-title {
+    font-family: var(--font-secondary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .event-title a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .event-title a:hover {
+    color: var(--color-accent);
+  }
+
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .event-time,
+  .event-location {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .recurring-badge {
+    display: inline-block;
+    background: var(--color-accent);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    margin-top: 0.5rem;
+  }
+
+  .event-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    .event-actions {
+      flex-direction: row;
+      width: 100%;
+    }
+
+    .event-actions .btn {
+      flex: 1;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+  }
+
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent);
+  }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-background);
+    color: var(--color-primary);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: var(--color-surface);
+    border-radius: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .past-events {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .past-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .past-event-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .past-event-item:hover {
+    background: var(--color-surface);
+  }
+
+  .past-event-date {
+    flex-shrink: 0;
+    width: 180px;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .past-event-title {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .past-event-item:hover .past-event-title {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .past-event-item {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .past-event-date {
+      width: auto;
+      font-size: 0.8125rem;
+    }
+  }
+</style>

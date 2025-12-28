@@ -1,0 +1,260 @@
+---
+interface Props {
+  user?: {
+    id: number;
+    email: string;
+    name: string;
+    role: "admin" | "editor";
+  };
+}
+
+const { user } = Astro.props;
+---
+
+<header class="admin-header">
+  <div class="header-left">
+    <button id="mobileMenuBtn" class="mobile-menu-btn">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="4" x2="20" y1="12" y2="12"></line>
+        <line x1="4" x2="20" y1="6" y2="6"></line>
+        <line x1="4" x2="20" y1="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="header-right">
+    {
+      user && (
+        <div class="user-menu">
+          <div class="user-info">
+            <span class="user-name">{user.name}</span>
+            <span class="user-role">{user.role}</span>
+          </div>
+          <div class="user-avatar">{user.name.charAt(0).toUpperCase()}</div>
+          <div class="dropdown-menu">
+            <a href="/admin/profile" class="dropdown-item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              Profile
+            </a>
+            <button id="logoutBtn" class="dropdown-item">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</header>
+
+<style>
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    padding: 0.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #4a5568;
+    border-radius: 6px;
+  }
+
+  .mobile-menu-btn:hover {
+    background: #f7fafc;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .user-menu:hover {
+    background: #f7fafc;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .user-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #2d3748;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    color: #718096;
+    text-transform: capitalize;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #4299e1, #2c5282);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.1),
+      0 4px 6px rgba(0, 0, 0, 0.05);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s;
+    border: 1px solid #e2e8f0;
+  }
+
+  .user-menu:hover .dropdown-menu,
+  .user-menu:focus-within .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .dropdown-item:first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .dropdown-item:last-child {
+    border-radius: 0 0 8px 8px;
+  }
+
+  .dropdown-item:hover {
+    background: #f7fafc;
+    color: #2d3748;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-menu-btn {
+      display: flex;
+    }
+
+    .user-info {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Logout functionality
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await fetch("/api/auth/logout", { method: "POST" });
+        window.location.href = "/admin/login";
+      } catch (err) {
+        console.error("Logout failed:", err);
+        window.location.href = "/admin/login";
+      }
+    });
+  }
+
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const sidebar = document.querySelector(".sidebar");
+  if (mobileMenuBtn && sidebar) {
+    mobileMenuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+  }
+</script>

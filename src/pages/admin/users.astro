@@ -1,0 +1,347 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+
+const user = Astro.locals.user;
+
+// Only admins can access this page
+if (user?.role !== "admin") {
+  return Astro.redirect("/admin");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+// Get all users
+const { results: users } = await db
+  .prepare(
+    "SELECT id, email, name, role, is_active, created_at, updated_at FROM users ORDER BY created_at DESC"
+  )
+  .all();
+---
+
+<AdminLayout title="Users" activeNav="users">
+  <div class="page-header">
+    <h1 class="page-title">User Management</h1>
+    <button id="inviteBtn" class="btn btn-primary">Invite User</button>
+  </div>
+
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            users && users.length > 0 ? (
+              users.map((u: any) => (
+                <tr>
+                  <td>
+                    <div class="user-name">
+                      <div class="user-avatar">
+                        {u.name.charAt(0).toUpperCase()}
+                      </div>
+                      <span>{u.name}</span>
+                    </div>
+                  </td>
+                  <td>{u.email}</td>
+                  <td>
+                    <span
+                      class={`badge ${u.role === "admin" ? "badge-info" : "badge-success"}`}
+                    >
+                      {u.role}
+                    </span>
+                  </td>
+                  <td>
+                    {u.is_active ? (
+                      <span class="status-active">
+                        <span class="status-dot status-dot-success" />
+                        Active
+                      </span>
+                    ) : (
+                      <span class="status-pending">
+                        <span class="status-dot status-dot-warning" />
+                        Pending Invite
+                      </span>
+                    )}
+                  </td>
+                  <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                  <td>
+                    {u.id !== user?.id && (
+                      <button
+                        class="btn btn-sm btn-secondary delete-user"
+                        data-user-id={u.id}
+                        data-user-name={u.name}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colspan="6" class="empty-state">
+                  No users found
+                </td>
+              </tr>
+            )
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Invite Modal -->
+  <div id="inviteModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Invite New User</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <form id="inviteForm">
+        <div class="form-group">
+          <label class="form-label" for="inviteName">Name</label>
+          <input
+            type="text"
+            id="inviteName"
+            name="name"
+            class="form-input"
+            required
+            placeholder="Enter name"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inviteEmail">Email</label>
+          <input
+            type="email"
+            id="inviteEmail"
+            name="email"
+            class="form-input"
+            required
+            placeholder="Enter email address"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inviteRole">Role</label>
+          <select id="inviteRole" name="role" class="form-select">
+            <option value="editor">Editor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="inviteError" class="alert alert-error" style="display: none;"></div>
+        <div id="inviteSuccess" class="alert alert-success" style="display: none;"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelInvite"
+            >Cancel</button
+          >
+          <button type="submit" class="btn btn-primary" id="submitInvite"
+            >Send Invite</button
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .user-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #4299e1, #2c5282);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .status-active,
+  .status-pending {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal.open {
+    display: flex;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a202c;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #718096;
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+  }
+
+  .modal-close:hover {
+    color: #1a202c;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .modal-actions .btn {
+    flex: 1;
+  }
+</style>
+
+<script>
+  const modal = document.getElementById("inviteModal");
+  const inviteBtn = document.getElementById("inviteBtn");
+  const closeModal = document.getElementById("closeModal");
+  const cancelInvite = document.getElementById("cancelInvite");
+  const inviteForm = document.getElementById("inviteForm") as HTMLFormElement;
+  const inviteError = document.getElementById("inviteError");
+  const inviteSuccess = document.getElementById("inviteSuccess");
+  const submitBtn = document.getElementById("submitInvite") as HTMLButtonElement;
+
+  function openModal() {
+    modal?.classList.add("open");
+    inviteError!.style.display = "none";
+    inviteSuccess!.style.display = "none";
+  }
+
+  function closeModalFn() {
+    modal?.classList.remove("open");
+    inviteForm?.reset();
+  }
+
+  inviteBtn?.addEventListener("click", openModal);
+  closeModal?.addEventListener("click", closeModalFn);
+  cancelInvite?.addEventListener("click", closeModalFn);
+
+  modal?.querySelector(".modal-backdrop")?.addEventListener("click", closeModalFn);
+
+  inviteForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    inviteError!.style.display = "none";
+    inviteSuccess!.style.display = "none";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+
+    const formData = new FormData(inviteForm);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      role: formData.get("role"),
+    };
+
+    try {
+      const response = await fetch("/api/auth/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        inviteSuccess!.textContent = `Invite sent! Link: ${result.data.inviteUrl}`;
+        inviteSuccess!.style.display = "block";
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } else {
+        inviteError!.textContent = result.error?.message || "Failed to send invite";
+        inviteError!.style.display = "block";
+      }
+    } catch (err) {
+      inviteError!.textContent = "An error occurred";
+      inviteError!.style.display = "block";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send Invite";
+    }
+  });
+
+  // Delete user functionality
+  document.querySelectorAll(".delete-user").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const target = e.currentTarget as HTMLButtonElement;
+      const userId = target.dataset.userId;
+      const userName = target.dataset.userName;
+
+      if (!confirm(`Are you sure you want to remove ${userName}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/auth/users/${userId}`, {
+          method: "DELETE",
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          window.location.reload();
+        } else {
+          alert(result.error?.message || "Failed to remove user");
+        }
+      } catch (err) {
+        alert("An error occurred");
+      }
+    });
+  });
+</script>

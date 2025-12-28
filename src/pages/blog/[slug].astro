@@ -1,0 +1,232 @@
+---
+import Base from "@/layouts/Base.astro";
+import type { BlogPost } from "@/types/cms";
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect("/blog");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+const post = await db
+  .prepare(`
+    SELECT bp.*, u.name as author_name
+    FROM blog_posts bp
+    LEFT JOIN users u ON bp.author_id = u.id
+    WHERE bp.slug = ? AND bp.status = 'published'
+  `)
+  .bind(slug)
+  .first<BlogPost & { author_name: string }>();
+
+if (!post) {
+  return Astro.redirect("/blog");
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+---
+
+<Base
+  title={post.meta_title || `${post.title} | Holy Trinity Episcopal Church`}
+  description={post.meta_description || post.excerpt || undefined}
+  image={post.featured_image || undefined}
+>
+  <article class="blog-post">
+    {post.featured_image && (
+      <div class="post-hero">
+        <img src={post.featured_image} alt={post.title} />
+      </div>
+    )}
+
+    <div class="container">
+      <div class="post-wrapper">
+        <header class="post-header">
+          <a href="/blog" class="back-link">← Back to Blog</a>
+          <h1 class="post-title">{post.title}</h1>
+          <div class="post-meta">
+            <span class="post-date">{formatDate(post.published_at || post.created_at)}</span>
+            {post.author_name && (
+              <>
+                <span class="meta-separator">•</span>
+                <span class="post-author">By {post.author_name}</span>
+              </>
+            )}
+          </div>
+        </header>
+
+        <div class="post-content" set:html={post.content} />
+
+        <footer class="post-footer">
+          <a href="/blog" class="btn btn-secondary">← Back to Blog</a>
+        </footer>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .blog-post {
+    padding-bottom: 4rem;
+  }
+
+  .post-hero {
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .post-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .post-header {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-title {
+    font-family: var(--font-secondary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .post-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .meta-separator {
+    opacity: 0.5;
+  }
+
+  .post-content {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--color-text);
+  }
+
+  .post-content :global(h2) {
+    font-family: var(--font-secondary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 2rem 0 1rem;
+  }
+
+  .post-content :global(h3) {
+    font-family: var(--font-secondary);
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  .post-content :global(p) {
+    margin: 1rem 0;
+  }
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .post-content :global(li) {
+    margin: 0.5rem 0;
+  }
+
+  .post-content :global(blockquote) {
+    border-left: 4px solid var(--color-accent);
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background: var(--color-surface);
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  .post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+
+  .post-content :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .post-content :global(a:hover) {
+    color: var(--color-primary);
+  }
+
+  .post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-background);
+    color: var(--color-primary);
+  }
+</style>

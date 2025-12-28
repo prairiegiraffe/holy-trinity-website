@@ -1,0 +1,302 @@
+---
+// Accept invite page - public, validates invite token
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accept Invite | Holy Trinity Admin</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 400px;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .logo h1 {
+        color: #1a365d;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+      .logo p {
+        color: #718096;
+        font-size: 0.875rem;
+      }
+      .welcome {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .welcome h2 {
+        color: #2d3748;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .welcome p {
+        color: #718096;
+        font-size: 0.875rem;
+      }
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+      }
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+      input:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+      }
+      input:disabled {
+        background: #f7fafc;
+      }
+      button {
+        width: 100%;
+        padding: 0.875rem;
+        background: #2c5282;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #1a365d;
+      }
+      button:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+      }
+      .error {
+        background: #fed7d7;
+        color: #c53030;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-bottom: 1.25rem;
+        display: none;
+      }
+      .error.show {
+        display: block;
+      }
+      .requirements {
+        font-size: 0.75rem;
+        color: #718096;
+        margin-top: 0.5rem;
+      }
+      .requirements li {
+        margin-left: 1rem;
+        margin-bottom: 0.25rem;
+      }
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #718096;
+      }
+      .invalid-token {
+        text-align: center;
+        padding: 1rem;
+      }
+      .invalid-token h2 {
+        color: #c53030;
+        margin-bottom: 0.5rem;
+      }
+      .invalid-token p {
+        color: #718096;
+        margin-bottom: 1rem;
+      }
+      .invalid-token a {
+        color: #2c5282;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">
+        <h1>Holy Trinity</h1>
+        <p>Episcopal Church Admin</p>
+      </div>
+
+      <div id="loading" class="loading">Validating invite...</div>
+
+      <div id="invalid" class="invalid-token" style="display: none">
+        <h2>Invalid Invite</h2>
+        <p>This invite link is invalid or has expired.</p>
+        <a href="/admin/login">Go to Login</a>
+      </div>
+
+      <div id="form-container" style="display: none">
+        <div class="welcome">
+          <h2>Welcome, <span id="userName"></span>!</h2>
+          <p>Create a password to complete your account setup.</p>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <form id="acceptForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" disabled />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="new-password"
+              placeholder="Create a password"
+              minlength="8"
+            />
+            <ul class="requirements">
+              <li>At least 8 characters</li>
+              <li>At least one uppercase letter</li>
+              <li>At least one lowercase letter</li>
+              <li>At least one number</li>
+            </ul>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              required
+              autocomplete="new-password"
+              placeholder="Confirm your password"
+            />
+          </div>
+
+          <button type="submit" id="submitBtn">Create Account</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const loading = document.getElementById("loading");
+      const invalid = document.getElementById("invalid");
+      const formContainer = document.getElementById("form-container");
+      const form = document.getElementById("acceptForm");
+      const errorDiv = document.getElementById("error");
+      const submitBtn = document.getElementById("submitBtn");
+      const userNameSpan = document.getElementById("userName");
+      const emailInput = document.getElementById("email");
+
+      // Get token from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+
+      if (!token) {
+        loading.style.display = "none";
+        invalid.style.display = "block";
+      } else {
+        // Validate token
+        fetch(`/api/auth/accept-invite?token=${token}`)
+          .then((res) => res.json())
+          .then((data) => {
+            loading.style.display = "none";
+            if (data.success) {
+              userNameSpan.textContent = data.data.name;
+              emailInput.value = data.data.email;
+              formContainer.style.display = "block";
+            } else {
+              invalid.style.display = "block";
+            }
+          })
+          .catch(() => {
+            loading.style.display = "none";
+            invalid.style.display = "block";
+          });
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorDiv.classList.remove("show");
+
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+          errorDiv.textContent = "Passwords do not match";
+          errorDiv.classList.add("show");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating account...";
+
+        try {
+          const response = await fetch("/api/auth/accept-invite", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, password }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.href = "/admin";
+          } else {
+            errorDiv.textContent =
+              data.error?.message || "An error occurred. Please try again.";
+            errorDiv.classList.add("show");
+          }
+        } catch (err) {
+          errorDiv.textContent = "An error occurred. Please try again.";
+          errorDiv.classList.add("show");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Account";
+        }
+      });
+    </script>
+  </body>
+</html>

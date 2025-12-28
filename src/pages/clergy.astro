@@ -2,6 +2,7 @@
 import Section from "@/components/core/Section.astro";
 import Base from "@/layouts/Base.astro";
 import { getEntry } from "astro:content";
+import type { Member } from "@/types/cms";
 
 const clergy = await getEntry("clergy", "index");
 const page_data = {
@@ -10,6 +11,28 @@ const page_data = {
 };
 const { Content } = await clergy.render();
 const { banner } = clergy.data;
+
+// Try to get clergy from D1 database
+const db = Astro.locals.runtime?.env?.DB;
+let clergyMembers: Member[] = [];
+
+if (db) {
+  try {
+    const { results } = await db
+      .prepare(`
+        SELECT * FROM members
+        WHERE group_type = 'clergy'
+        ORDER BY sort_order ASC, name ASC
+      `)
+      .all() as { results: Member[] };
+
+    if (results && results.length > 0) {
+      clergyMembers = results;
+    }
+  } catch (e) {
+    console.error('Failed to fetch clergy from D1:', e);
+  }
+}
 ---
 
 <Base

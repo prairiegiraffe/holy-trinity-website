@@ -1,0 +1,201 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+import type { PageContent } from "@/types/cms";
+
+const db = Astro.locals.runtime.env.DB;
+
+const { results: pages } = await db
+  .prepare(`
+    SELECT pc.*, u.name as updated_by_name
+    FROM page_content pc
+    LEFT JOIN users u ON pc.updated_by = u.id
+    ORDER BY pc.page_key ASC
+  `)
+  .all<PageContent & { updated_by_name: string }>();
+
+// Define available pages that can be edited
+const availablePages = [
+  { key: 'homepage', title: 'Homepage', description: 'Main landing page content' },
+  { key: 'about', title: 'About', description: 'About the church' },
+  { key: 'worship', title: 'Worship', description: 'Worship services and times' },
+  { key: 'vestry', title: 'Vestry', description: 'Vestry information' },
+  { key: 'music-team', title: 'Music Team', description: 'Music ministry' },
+  { key: 'endowment', title: 'Endowment', description: 'Endowment committee' },
+  { key: 'altar-guild', title: 'Altar Guild', description: 'Altar Guild ministry' },
+  { key: 'outreach', title: 'Outreach', description: 'Outreach programs' },
+  { key: 'contact', title: 'Contact', description: 'Contact information' },
+];
+
+// Check which pages exist in DB
+const existingKeys = new Set(pages.map(p => p.page_key));
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+---
+
+<AdminLayout title="Pages">
+  <div class="page-header">
+    <h1>Page Content</h1>
+    <p class="page-description">Edit content for the main pages of your website.</p>
+  </div>
+
+  <div class="pages-grid">
+    {availablePages.map((page) => {
+      const dbPage = pages.find(p => p.page_key === page.key);
+      const hasContent = existingKeys.has(page.key);
+
+      return (
+        <div class={`page-card ${hasContent ? 'has-content' : ''}`}>
+          <div class="page-card-header">
+            <h3>{page.title}</h3>
+            {hasContent && (
+              <span class="status-badge">Customized</span>
+            )}
+          </div>
+
+          <p class="page-card-description">{page.description}</p>
+
+          {dbPage && (
+            <div class="page-meta">
+              <span>Last updated: {formatDate(dbPage.updated_at)}</span>
+              {dbPage.updated_by_name && (
+                <span>by {dbPage.updated_by_name}</span>
+              )}
+            </div>
+          )}
+
+          <a href={`/admin/pages/${page.key}`} class="btn btn-secondary">
+            {hasContent ? 'Edit Content' : 'Add Content'}
+          </a>
+        </div>
+      );
+    })}
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .page-description {
+    color: var(--color-text-secondary);
+  }
+
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1200px) {
+    .pages-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pages-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .page-card {
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .page-card.has-content {
+    border-color: var(--color-accent);
+    border-width: 2px;
+  }
+
+  .page-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-card-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .status-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .page-card-description {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .page-meta {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-secondary {
+    background: var(--color-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+</style>

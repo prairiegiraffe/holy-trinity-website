@@ -1,0 +1,32 @@
+name = "holy-trinity-website"
+account_id = "8863165c91205bf43cd93c16208a4fa3"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "holy-trinity-cms"
+database_id = "5b57c06a-2929-46e4-aa93-9c59d4897890"
+
+# R2 Bucket for image uploads
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "holy-trinity-images"
+
+# Environment variables (non-sensitive)
+[vars]
+SITE_URL = "https://holytrinityepiscopal.org"
+
+# Secrets (set via wrangler secret put):
+# - JWT_SECRET: Random string for signing JWTs
+# - INITIAL_ADMIN_EMAIL: Email for first admin account
+# - INITIAL_ADMIN_PASSWORD: Password for first admin account
+
+# Local development configuration
+[env.dev]
+name = "holy-trinity-website-dev"
+
+[env.dev.vars]
+SITE_URL = "http://localhost:4321"

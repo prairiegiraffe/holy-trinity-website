@@ -1,0 +1,281 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+
+const user = Astro.locals.user;
+const db = Astro.locals.runtime.env.DB;
+
+// Get counts for dashboard
+const [blogCount, eventsCount, membersCount, usersCount] = await Promise.all([
+  db.prepare("SELECT COUNT(*) as count FROM blog_posts").first<{ count: number }>(),
+  db.prepare("SELECT COUNT(*) as count FROM events WHERE event_date >= date('now')").first<{ count: number }>(),
+  db.prepare("SELECT COUNT(*) as count FROM members").first<{ count: number }>(),
+  db.prepare("SELECT COUNT(*) as count FROM users WHERE is_active = 1").first<{ count: number }>(),
+]);
+
+// Get recent blog posts
+const { results: recentPosts } = await db
+  .prepare(`
+    SELECT bp.*, u.name as author_name
+    FROM blog_posts bp
+    LEFT JOIN users u ON bp.author_id = u.id
+    ORDER BY bp.created_at DESC
+    LIMIT 5
+  `)
+  .all();
+
+// Get upcoming events
+const { results: upcomingEvents } = await db
+  .prepare(`
+    SELECT * FROM events
+    WHERE event_date >= date('now')
+    ORDER BY event_date ASC
+    LIMIT 5
+  `)
+  .all();
+---
+
+<AdminLayout title="Dashboard" activeNav="dashboard">
+  <div class="page-header">
+    <h1 class="page-title">Welcome back, {user?.name}!</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{blogCount?.count || 0}</div>
+        <div class="stat-label">Blog Posts</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+          <line x1="16" x2="16" y1="2" y2="6"/>
+          <line x1="8" x2="8" y1="2" y2="6"/>
+          <line x1="3" x2="21" y1="10" y2="10"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{eventsCount?.count || 0}</div>
+        <div class="stat-label">Upcoming Events</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{membersCount?.count || 0}</div>
+        <div class="stat-label">Team Members</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon orange">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" x2="19" y1="8" y2="14"/>
+          <line x1="22" x2="16" y1="11" y2="11"/>
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{usersCount?.count || 0}</div>
+        <div class="stat-label">Admin Users</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Recent Blog Posts</h2>
+        <a href="/admin/blog/new" class="btn btn-primary btn-sm">New Post</a>
+      </div>
+      {recentPosts && recentPosts.length > 0 ? (
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentPosts.map((post: any) => (
+                <tr>
+                  <td>
+                    <a href={`/admin/blog/${post.id}`} class="table-link">{post.title}</a>
+                  </td>
+                  <td>{post.author_name || 'Unknown'}</td>
+                  <td>
+                    <span class={`badge ${post.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
+                      {post.status}
+                    </span>
+                  </td>
+                  <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div class="empty-state">
+          <div class="empty-state-icon">📝</div>
+          <p class="empty-state-title">No blog posts yet</p>
+          <p>Create your first blog post to get started.</p>
+        </div>
+      )}
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Upcoming Events</h2>
+        <a href="/admin/events/new" class="btn btn-primary btn-sm">New Event</a>
+      </div>
+      {upcomingEvents && upcomingEvents.length > 0 ? (
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {upcomingEvents.map((event: any) => (
+                <tr>
+                  <td>
+                    <a href={`/admin/events/${event.id}`} class="table-link">{event.title}</a>
+                  </td>
+                  <td>
+                    {new Date(event.event_date).toLocaleDateString()}
+                    {event.event_time && ` at ${event.event_time}`}
+                  </td>
+                  <td>
+                    <span class={`badge ${event.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
+                      {event.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <p class="empty-state-title">No upcoming events</p>
+          <p>Create an event to display it here.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-icon.blue {
+    background: #ebf8ff;
+    color: #2b6cb0;
+  }
+
+  .stat-icon.green {
+    background: #f0fff4;
+    color: #276749;
+  }
+
+  .stat-icon.purple {
+    background: #faf5ff;
+    color: #6b46c1;
+  }
+
+  .stat-icon.orange {
+    background: #fffaf0;
+    color: #c05621;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #718096;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .table-link {
+    color: #2c5282;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .table-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

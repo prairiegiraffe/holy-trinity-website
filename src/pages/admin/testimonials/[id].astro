@@ -1,0 +1,64 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+import TestimonialForm from "@/components/admin/forms/TestimonialForm";
+import type { Testimonial } from "@/types/cms";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/admin/testimonials");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+const testimonial = await db
+  .prepare("SELECT * FROM testimonials WHERE id = ?")
+  .bind(id)
+  .first<Testimonial>();
+
+if (!testimonial) {
+  return Astro.redirect("/admin/testimonials");
+}
+---
+
+<AdminLayout title={`Edit Testimonial`}>
+  <div class="page-header">
+    <a href="/admin/testimonials" class="back-link">← Back to Testimonials</a>
+    <h1>Edit Testimonial</h1>
+  </div>
+
+  <div class="form-container">
+    <TestimonialForm testimonial={testimonial} client:load />
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .form-container {
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+</style>

@@ -1,0 +1,139 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+
+const db = Astro.locals.runtime.env.DB;
+
+const { results: events } = await db
+  .prepare("SELECT * FROM events ORDER BY event_date DESC")
+  .all();
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function isUpcoming(dateStr: string) {
+  return new Date(dateStr) >= new Date(new Date().toDateString());
+}
+---
+
+<AdminLayout title="Events" activeNav="events">
+  <div class="page-header">
+    <h1 class="page-title">Events</h1>
+    <a href="/admin/events/new" class="btn btn-primary">New Event</a>
+  </div>
+
+  <div class="card">
+    {events && events.length > 0 ? (
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Date & Time</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Recurring</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((event: any) => (
+              <tr class={!isUpcoming(event.event_date) ? 'past-event' : ''}>
+                <td>
+                  <a href={`/admin/events/${event.id}`} class="table-link">
+                    {event.title}
+                  </a>
+                  <div class="table-meta">/{event.slug}</div>
+                </td>
+                <td>
+                  <div class="event-date">
+                    {formatDate(event.event_date)}
+                    {event.event_time && (
+                      <span class="event-time">at {event.event_time}</span>
+                    )}
+                  </div>
+                </td>
+                <td>{event.location || '—'}</td>
+                <td>
+                  <span class={`badge ${event.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
+                    {event.status}
+                  </span>
+                </td>
+                <td>
+                  {event.recurring !== 'none' ? (
+                    <span class="badge badge-info">{event.recurring}</span>
+                  ) : (
+                    '—'
+                  )}
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <a href={`/admin/events/${event.id}`} class="btn btn-sm btn-secondary">
+                      Edit
+                    </a>
+                    {event.status === 'published' && (
+                      <a href={`/events/${event.slug}`} class="btn btn-sm btn-secondary" target="_blank">
+                        View
+                      </a>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="empty-state">
+        <div class="empty-state-icon">📅</div>
+        <p class="empty-state-title">No events yet</p>
+        <p>Create your first event to share with your congregation.</p>
+        <a href="/admin/events/new" class="btn btn-primary" style="margin-top: 1rem;">
+          Create First Event
+        </a>
+      </div>
+    )}
+  </div>
+</AdminLayout>
+
+<style>
+  .table-link {
+    color: #2c5282;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .table-link:hover {
+    text-decoration: underline;
+  }
+
+  .table-meta {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-top: 0.25rem;
+  }
+
+  .event-date {
+    font-weight: 500;
+  }
+
+  .event-time {
+    font-weight: 400;
+    color: #718096;
+    margin-left: 0.25rem;
+  }
+
+  .past-event {
+    opacity: 0.6;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+</style>

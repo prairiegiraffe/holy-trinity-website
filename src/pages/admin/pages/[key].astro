@@ -1,0 +1,152 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+import PageEditor from "@/components/admin/forms/PageEditor";
+import type { PageContent } from "@/types/cms";
+
+const { key } = Astro.params;
+
+if (!key) {
+  return Astro.redirect("/admin/pages");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+// Get existing content if any
+const pageContent = await db
+  .prepare(`
+    SELECT pc.*, u.name as updated_by_name
+    FROM page_content pc
+    LEFT JOIN users u ON pc.updated_by = u.id
+    WHERE pc.page_key = ?
+  `)
+  .bind(key)
+  .first<PageContent & { updated_by_name: string }>();
+
+// Define page configurations
+const pageConfigs: Record<string, { title: string; fields: any[] }> = {
+  homepage: {
+    title: 'Homepage',
+    fields: [
+      { key: 'hero_title', label: 'Hero Title', type: 'text' },
+      { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'textarea' },
+      { key: 'welcome_title', label: 'Welcome Section Title', type: 'text' },
+      { key: 'welcome_content', label: 'Welcome Content', type: 'richtext' },
+      { key: 'mission_statement', label: 'Mission Statement', type: 'textarea' },
+    ],
+  },
+  about: {
+    title: 'About',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'content', label: 'Page Content', type: 'richtext' },
+    ],
+  },
+  worship: {
+    title: 'Worship',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'intro', label: 'Introduction', type: 'textarea' },
+      { key: 'services_content', label: 'Services Information', type: 'richtext' },
+    ],
+  },
+  vestry: {
+    title: 'Vestry',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'intro', label: 'Introduction', type: 'richtext' },
+    ],
+  },
+  'music-team': {
+    title: 'Music Team',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'content', label: 'Content', type: 'richtext' },
+    ],
+  },
+  endowment: {
+    title: 'Endowment',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'content', label: 'Content', type: 'richtext' },
+    ],
+  },
+  'altar-guild': {
+    title: 'Altar Guild',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'content', label: 'Content', type: 'richtext' },
+    ],
+  },
+  outreach: {
+    title: 'Outreach',
+    fields: [
+      { key: 'title', label: 'Page Title', type: 'text' },
+      { key: 'intro', label: 'Introduction', type: 'textarea' },
+      { key: 'programs', label: 'Programs Content', type: 'richtext' },
+    ],
+  },
+  contact: {
+    title: 'Contact',
+    fields: [
+      { key: 'address', label: 'Address', type: 'textarea' },
+      { key: 'phone', label: 'Phone Number', type: 'text' },
+      { key: 'email', label: 'Email Address', type: 'text' },
+      { key: 'office_hours', label: 'Office Hours', type: 'textarea' },
+      { key: 'additional_info', label: 'Additional Information', type: 'richtext' },
+    ],
+  },
+};
+
+const config = pageConfigs[key] || {
+  title: key.charAt(0).toUpperCase() + key.slice(1).replace(/-/g, ' '),
+  fields: [{ key: 'content', label: 'Content', type: 'richtext' }],
+};
+---
+
+<AdminLayout title={`Edit ${config.title}`}>
+  <div class="page-header">
+    <a href="/admin/pages" class="back-link">← Back to Pages</a>
+    <h1>Edit {config.title}</h1>
+  </div>
+
+  <div class="editor-container">
+    <PageEditor
+      pageKey={key}
+      pageTitle={config.title}
+      initialContent={pageContent}
+      contentFields={config.fields}
+      client:load
+    />
+  </div>
+</AdminLayout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .editor-container {
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+</style>

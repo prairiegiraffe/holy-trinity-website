@@ -2,14 +2,45 @@
 import Section from "@/components/core/Section.astro";
 import Base from "@/layouts/Base.astro";
 import { getEntry } from "astro:content";
+import type { Member } from "@/types/cms";
 
+// Get content from markdown file (fallback)
 const vestry = await getEntry("vestry", "index");
 const page_data = {
   ...vestry.data,
   content: vestry.body,
 };
 const { Content } = await vestry.render();
-const { banner, members } = vestry.data;
+const { banner } = vestry.data;
+
+// Try to get members from D1 database first
+const db = Astro.locals.runtime?.env?.DB;
+let members = vestry.data.members;
+
+if (db) {
+  try {
+    const { results } = await db
+      .prepare(`
+        SELECT * FROM members
+        WHERE group_type = 'vestry'
+        ORDER BY sort_order ASC, name ASC
+      `)
+      .all() as { results: Member[] };
+
+    if (results && results.length > 0) {
+      // Transform D1 results to match the markdown format
+      members = results.map((m: Member) => ({
+        name: m.name,
+        title: m.title,
+        term: m.term || undefined,
+        image: m.image || undefined,
+      }));
+    }
+  } catch (e) {
+    // Fallback to markdown data if D1 fails
+    console.error('Failed to fetch vestry from D1:', e);
+  }
+}
 ---
 
 <Base

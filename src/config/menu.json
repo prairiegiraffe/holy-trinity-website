@@ -5,6 +5,14 @@
       "url": "/#worship-schedule-services"
     },
     {
+      "name": "Events",
+      "url": "/events"
+    },
+    {
+      "name": "Blog",
+      "url": "/blog"
+    },
+    {
       "name": "Clergy",
       "url": "/clergy"
     }
@@ -14,6 +22,14 @@
     {
       "name": "Services",
       "url": "/#worship-schedule-services"
+    },
+    {
+      "name": "Events",
+      "url": "/events"
+    },
+    {
+      "name": "Blog",
+      "url": "/blog"
     },
     {
       "name": "Clergy",

@@ -1,0 +1,369 @@
+---
+import Base from "@/layouts/Base.astro";
+import type { Event } from "@/types/cms";
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect("/events");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+const event = await db
+  .prepare("SELECT * FROM events WHERE slug = ? AND status = 'published'")
+  .bind(slug)
+  .first<Event>();
+
+if (!event) {
+  return Astro.redirect("/events");
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+function formatTime(timeStr: string) {
+  const [hours, minutes] = timeStr.split(':');
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+}
+
+const isUpcoming = new Date(event.event_date) >= new Date(new Date().toDateString());
+---
+
+<Base
+  title={event.meta_title || `${event.title} | Holy Trinity Episcopal Church`}
+  description={event.meta_description || undefined}
+  image={event.image || undefined}
+>
+  <article class="event-page">
+    {event.image && (
+      <div class="event-hero">
+        <img src={event.image} alt={event.title} />
+      </div>
+    )}
+
+    <div class="container">
+      <div class="event-wrapper">
+        <header class="event-header">
+          <a href="/events" class="back-link">← Back to Events</a>
+
+          <h1 class="event-title">{event.title}</h1>
+
+          <div class="event-meta-grid">
+            <div class="meta-item">
+              <div class="meta-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                  <line x1="16" x2="16" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="2" y2="6"/>
+                  <line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+              </div>
+              <div class="meta-content">
+                <span class="meta-label">Date</span>
+                <span class="meta-value">{formatDate(event.event_date)}</span>
+                {event.end_date && event.end_date !== event.event_date && (
+                  <span class="meta-value">to {formatDate(event.end_date)}</span>
+                )}
+              </div>
+            </div>
+
+            {event.event_time && (
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div class="meta-content">
+                  <span class="meta-label">Time</span>
+                  <span class="meta-value">
+                    {formatTime(event.event_time)}
+                    {event.end_time && ` - ${formatTime(event.end_time)}`}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {event.location && (
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </div>
+                <div class="meta-content">
+                  <span class="meta-label">Location</span>
+                  <span class="meta-value">{event.location}</span>
+                </div>
+              </div>
+            )}
+
+            {event.recurring !== 'none' && (
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                  </svg>
+                </div>
+                <div class="meta-content">
+                  <span class="meta-label">Recurring</span>
+                  <span class="meta-value recurring">{event.recurring}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div class="event-content" set:html={event.description} />
+
+        <div class="event-actions">
+          {event.rsvp_link && isUpcoming && (
+            <a href={event.rsvp_link} class="btn btn-primary" target="_blank" rel="noopener">
+              RSVP for This Event
+            </a>
+          )}
+          {event.more_info_link && (
+            <a href={event.more_info_link} class="btn btn-secondary" target="_blank" rel="noopener">
+              More Information
+            </a>
+          )}
+        </div>
+
+        <footer class="event-footer">
+          <a href="/events" class="btn btn-outline">← Back to All Events</a>
+        </footer>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .event-page {
+    padding-bottom: 4rem;
+  }
+
+  .event-hero {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .event-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .event-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
+  .event-header {
+    margin-bottom: 2rem;
+  }
+
+  .event-title {
+    font-family: var(--font-secondary);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .event-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  .event-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-radius: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .event-meta-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .meta-item {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .meta-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .meta-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .meta-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.25rem;
+  }
+
+  .meta-value {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .meta-value.recurring {
+    text-transform: capitalize;
+    color: var(--color-accent);
+  }
+
+  .event-content {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    color: var(--color-text);
+    margin: 2rem 0;
+  }
+
+  .event-content :global(h2) {
+    font-family: var(--font-secondary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .event-content :global(h3) {
+    font-family: var(--font-secondary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  .event-content :global(p) {
+    margin: 1rem 0;
+  }
+
+  .event-content :global(ul),
+  .event-content :global(ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .event-content :global(li) {
+    margin: 0.5rem 0;
+  }
+
+  .event-content :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-radius: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .event-actions {
+      flex-direction: column;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary);
+  }
+
+  .btn-secondary {
+    background: var(--color-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .btn-outline:hover {
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+
+  .event-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+</style>

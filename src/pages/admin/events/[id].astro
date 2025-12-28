@@ -1,0 +1,72 @@
+---
+import AdminLayout from "@/components/admin/AdminLayout.astro";
+import EventForm from "@/components/admin/forms/EventForm";
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/admin/events");
+}
+
+const db = Astro.locals.runtime.env.DB;
+
+const event = await db
+  .prepare("SELECT * FROM events WHERE id = ?")
+  .bind(id)
+  .first();
+
+if (!event) {
+  return Astro.redirect("/admin/events");
+}
+---
+
+<AdminLayout title={`Edit: ${event.title}`} activeNav="events">
+  <div class="page-header">
+    <div>
+      <a href="/admin/events" class="back-link">← Back to Events</a>
+      <h1 class="page-title">Edit Event</h1>
+    </div>
+    {event.status === 'published' && (
+      <a href={`/events/${event.slug}`} class="btn btn-secondary" target="_blank">
+        View Published Event
+      </a>
+    )}
+  </div>
+
+  <div class="card">
+    <EventForm
+      client:load
+      initialData={{
+        id: event.id as number,
+        title: event.title as string,
+        description: event.description as string,
+        event_date: event.event_date as string,
+        event_time: (event.event_time as string) || "",
+        end_date: (event.end_date as string) || "",
+        end_time: (event.end_time as string) || "",
+        location: (event.location as string) || "",
+        image: (event.image as string) || "",
+        status: event.status as "draft" | "published",
+        recurring: event.recurring as "none" | "weekly" | "monthly" | "yearly",
+        rsvp_link: (event.rsvp_link as string) || "",
+        more_info_link: (event.more_info_link as string) || "",
+        meta_title: (event.meta_title as string) || "",
+        meta_description: (event.meta_description as string) || "",
+      }}
+    />
+  </div>
+</AdminLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    color: #718096;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link:hover {
+    color: #2c5282;
+  }
+</style>
