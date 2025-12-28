@@ -1,5 +1,4 @@
 name = "holy-trinity-website"
-account_id = "8863165c91205bf43cd93c16208a4fa3"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "./dist"
@@ -21,12 +20,13 @@ SITE_URL = "https://holytrinityepiscopal.org"
 
 # Secrets (set via wrangler secret put):
 # - JWT_SECRET: Random string for signing JWTs
-# - INITIAL_ADMIN_EMAIL: Email for first admin account
-# - INITIAL_ADMIN_PASSWORD: Password for first admin account
 
-# Local development configuration
-[env.dev]
-name = "holy-trinity-website-dev"
+# Preview environment (for PR previews)
+[env.preview]
+[env.preview.vars]
+SITE_URL = "https://preview.holytrinityepiscopal.org"
 
-[env.dev.vars]
-SITE_URL = "http://localhost:4321"
+# Production environment
+[env.production]
+[env.production.vars]
+SITE_URL = "https://holytrinityepiscopal.org"
