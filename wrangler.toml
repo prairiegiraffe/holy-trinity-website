@@ -3,13 +3,13 @@ compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "./dist"
 
-# D1 Database binding
+# D1 Database binding (top-level for local dev)
 [[d1_databases]]
 binding = "DB"
 database_name = "holy-trinity-cms"
 database_id = "5b57c06a-2929-46e4-aa93-9c59d4897890"
 
-# R2 Bucket for image uploads
+# R2 Bucket for image uploads (top-level for local dev)
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "holy-trinity-images"
@@ -18,7 +18,7 @@ bucket_name = "holy-trinity-images"
 [vars]
 SITE_URL = "https://holytrinityepiscopal.org"
 
-# Secrets (set via wrangler secret put):
+# Secrets (set via Cloudflare Dashboard):
 # - JWT_SECRET: Random string for signing JWTs
 
 # Preview environment (for PR previews)
@@ -26,7 +26,25 @@ SITE_URL = "https://holytrinityepiscopal.org"
 [env.preview.vars]
 SITE_URL = "https://preview.holytrinityepiscopal.org"
 
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "holy-trinity-cms"
+database_id = "5b57c06a-2929-46e4-aa93-9c59d4897890"
+
+[[env.preview.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "holy-trinity-images"
+
 # Production environment
 [env.production]
 [env.production.vars]
 SITE_URL = "https://holytrinityepiscopal.org"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "holy-trinity-cms"
+database_id = "5b57c06a-2929-46e4-aa93-9c59d4897890"
+
+[[env.production.r2_buckets]]
+binding = "IMAGES"
+bucket_name = "holy-trinity-images"
