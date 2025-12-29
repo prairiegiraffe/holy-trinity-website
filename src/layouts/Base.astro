@@ -147,7 +147,7 @@ const _noindex =
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href={`https://fonts.googleapis.com/css2?family=${pf}&family=${sf}&display=swap`} rel="stylesheet" />
-    <style define:vars={{ fontPrimary, fontSecondary }}>
+    <style is:global define:vars={{ fontPrimary, fontSecondary }}>
       :root {
         --font-primary: var(--fontPrimary), serif;
         --font-secondary: var(--fontSecondary), sans-serif;
