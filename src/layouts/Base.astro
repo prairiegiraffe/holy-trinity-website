@@ -7,7 +7,6 @@ import Footer from "@/layouts/partials/Footer.astro";
 import Header from "@/layouts/partials/Header.astro";
 import "@/styles/main.scss";
 
-import { AstroFont } from "astro-font";
 import { ViewTransitions } from "astro:transitions";
 import { getEntry } from "astro:content";
 import type { PageType } from "@/content/page.types";
@@ -145,28 +144,15 @@ const _noindex =
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <!-- google font css -->
-    <AstroFont
-      config={[
-        {
-          src: [],
-          preload: false,
-          display: "swap",
-          name: fontPrimary!,
-          fallback: "sans-serif",
-          cssVariable: "font-primary",
-          googleFontsURL: `https://fonts.googleapis.com/css2?family=${pf}&display=swap`,
-        },
-        {
-          src: [],
-          preload: false,
-          display: "swap",
-          name: fontSecondary!,
-          fallback: "sans-serif",
-          cssVariable: "font-secondary",
-          googleFontsURL: `https://fonts.googleapis.com/css2?family=${sf}&display=swap`,
-        },
-      ]}
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href={`https://fonts.googleapis.com/css2?family=${pf}&family=${sf}&display=swap`} rel="stylesheet" />
+    <style define:vars={{ fontPrimary, fontSecondary }}>
+      :root {
+        --font-primary: var(--fontPrimary), serif;
+        --font-secondary: var(--fontSecondary), sans-serif;
+      }
+    </style>
 
     <!-- responsive meta -->
     <meta

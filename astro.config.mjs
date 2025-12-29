@@ -38,7 +38,6 @@ export default defineConfig({
         "node:fs",
         "crypto",
         "bcryptjs",
-        "astro-font",
       ],
     },
   },
